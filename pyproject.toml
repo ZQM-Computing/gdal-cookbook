@@ -1,0 +1,19 @@
+[project]
+name = "gdal-patterns"
+version = "0.1.0"
+description = "GDAL/OGR command-line patterns for geospatial data"
+readme = "README.md"
+requires-python = ">=3.11"
+license = {text = "MIT"}
+authors = [{name = "ZQM Computing", email = "zqmcomputing@gmail.com"}]
+keywords = ["gdal", "ogr", "geospatial", "raster", "vector"]
+
+[project.urls]
+Homepage = "https://github.com/ZQM-Computing/gdal-patterns"
+
+[tool.ruff]
+line-length = 120
+target-version = "py311"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
