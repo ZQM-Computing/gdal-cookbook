@@ -1,10 +1,9 @@
-#!/usr/bin/env python3
 """
 06-python-integration/run.py
 Demonstrates GDAL Python bindings for raster I/O and reprojection using
 synthetic data (no external downloads).
 """
-import os
+
 import numpy as np
 from osgeo import gdal, osr
 
