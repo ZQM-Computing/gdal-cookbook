@@ -51,7 +51,7 @@ def test_shell_scripts_have_shebang():
 
 def test_python_script_has_main_guard():
     """The Python example should use a __main__ guard."""
-    path = REPO_ROOT / "06-python-integration/run.py"
+    path = EXAMPLES_DIR / "06-python-integration/run.py"
     text = path.read_text()
     assert "__main__" in text, "Python example missing __main__ guard"
 
