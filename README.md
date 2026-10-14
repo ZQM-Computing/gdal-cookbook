@@ -1,43 +1,82 @@
 # GDAL/OGR Command-Line Patterns
 
-Production-tested GDAL/OGR patterns for geospatial data conversion, reprojection, clipping, and mosaicking.
+[![CI](https://github.com/ZQM-Computing/gdal-patterns/actions/workflows/ci.yml/badge.svg)](https://github.com/ZQM-Computing/gdal-patterns/actions/workflows/ci.yml)
+
+Production-tested GDAL/OGR patterns for geospatial data conversion, reprojection, clipping, and mosaicking — the command-line moves that show up in every data pipeline.
 
 ## Who this is for
 
-Geospatial developers, GIS analysts, and data engineers who work with raster and vector data.
+Geospatial developers, GIS analysts, and data engineers who move raster and vector data between formats, projections, and systems. GDAL is the quiet dependency under half the industry; these patterns make its CLI second nature.
 
-## What's inside
+## Prerequisites
 
-- `examples/` — Runnable scripts with sample data
-- `tests/` — Validation tests for each pattern
+- GDAL >= 3.6 with command-line utilities (`gdal-bin`)
+- Python 3.11+ with GDAL bindings for the Python example (`python3-gdal`)
+- Bash
+
+```bash
+# Ubuntu
+sudo apt-get install gdal-bin python3-gdal
+```
+
+## Quickstart
+
+```bash
+cd examples/01-ogr2ogr-conversion
+chmod +x run.sh
+./run.sh
+```
+
+Each `run.sh` is self-contained and works on synthetic data it generates itself. The Python example runs with `python examples/06-python-integration/run.py`.
 
 ## Patterns
 
-| # | Pattern | Description |
-|---|---------|-------------|
-| 1 | ogr2ogr conversion | Format conversion and reprojection |
-| 2 | gdal_translate | Raster format conversion and compression |
-| 3 | gdalwarp reprojection | Reproject rasters between CRS |
-| 4 | Virtual rasters | VRT for large dataset mosaicking |
-| 5 | Batch processing | Shell scripts for bulk operations |
-| 6 | Python integration | osgeo.gdal Python API examples |
+| # | Example | What it demonstrates |
+|---|---------|----------------------|
+| 01 | `01-ogr2ogr-conversion` | Vector format conversion with `ogr2ogr` on synthetic GeoJSON |
+| 02 | `02-gdal-translate` | Raster translation, format conversion, and subsetting |
+| 03 | `03-gdalwarp-reprojection` | Raster reprojection between coordinate systems with `gdalwarp` |
+| 04 | `04-virtual-rasters` | VRT mosaicking — treating many files as one virtual raster |
+| 05 | `05-batch-processing` | Shell-loop batch processing over a directory of rasters |
+| 06 | `06-python-integration` | `osgeo.gdal` Python API: in-memory raster, gradient fill, read/write |
 
-## Requirements
+## Repository layout
 
-- GDAL >= 3.6
-- Python 3.11+
-- Shell (bash)
+```
+gdal-patterns/
+├── examples/
+│   ├── 01-ogr2ogr-conversion/run.sh
+│   ├── 02-gdal-translate/run.sh
+│   ├── 03-gdalwarp-reprojection/run.sh
+│   ├── 04-virtual-rasters/run.sh
+│   ├── 05-batch-processing/run.sh
+│   └── 06-python-integration/run.py
+├── tests/
+│   └── test_patterns.py     # every script exists, is non-empty, is executable
+├── pyproject.toml
+├── README.md
+├── LICENSE
+└── CONTRIBUTING.md
+```
 
-## Quick start
+## Validation
 
 ```bash
-# Install GDAL (Ubuntu)
-sudo apt-get install gdal-bin python3-gdal
-
-# Run an example
-cd examples/01-ogr2ogr-conversion
-./run.sh
+pip install pytest
+pytest            # checks script presence, size, and executability
 ```
+
+CI runs `ruff check` / `ruff format --check` and the pytest suite on every push and pull request.
+
+## Roadmap
+
+- `gdal_calc.py` raster algebra patterns
+- COG creation flags (`-of COG`) as a bridge to [cog-patterns](https://github.com/ZQM-Computing/cog-patterns)
+- ogr2ogr spatial filtering (`-spat`, `-clipsrc`) walkthrough
+
+## Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md). Report security issues to zqmcomputing@gmail.com — please do not open a public issue for those.
 
 ## More from this series
 
@@ -72,3 +111,8 @@ MIT — see LICENSE file.
 
 *Part of [ZQM Labs](https://github.com/ZQM-Computing) — games, gear & a little mischief.*
 
+*Part of [ZQM Computing](https://github.com/ZQM-Computing) — games, gear & a little mischief.*
+
+## License
+
+MIT — see [LICENSE](LICENSE).
