@@ -1,15 +1,31 @@
-# Security policy
+# Security Policy
 
-## Supported version
+Report vulnerabilities to zqmcomputing@gmail.com.
 
-Security fixes are applied to the `main` branch. This repository contains GDAL/OGR command-line patterns; it is not a hosted service.
+## Scope
 
-## Reporting a vulnerability
+- All ZQM Computing public repositories
+- ZQM Labs infrastructure and tooling
 
-Email **zqmcomputing@gmail.com** with the subject `gdal-patterns security` if you find a vulnerability in the example commands or workflow configuration — for example a pattern that silently overwrites or deletes data beyond what it documents. Please do not open a public issue for a sensitive report.
+## Reporting
 
-Include the affected file, the impact you observed, and reproduction steps when available.
+- **Email**: zqmcomputing@gmail.com
+- **GitHub Security Advisory**: Use the "Security" tab on GitHub
+- Please do NOT open public issues for security vulnerabilities
 
-## Command-line caution
+## What to Expect
 
-GDAL commands act directly on your files, and flags like `-overwrite` do exactly what they say. The patterns are written against synthetic sample data; read a command before adapting it to a directory containing data you care about.
+- Acknowledgment within 48 hours
+- Assessment and severity classification within 5 business days
+- Coordinated disclosure timeline agreed upon with reporter
+
+## Supported Versions
+
+| Version | Supported |
+|---------|-----------|
+| latest  | Yes        |
+| < latest| No         |
+
+---
+
+*Part of the [ZQM Computing](https://github.com/ZQM-Computing) ecosystem.*
