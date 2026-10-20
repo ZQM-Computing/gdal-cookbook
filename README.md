@@ -39,6 +39,14 @@ chmod +x run.sh
 
 Each `run.sh` is self-contained and works on synthetic data it generates itself. The Python example runs with `python examples/06-python-integration/run.py`.
 
+## Usage
+
+Each pattern is a self-contained, runnable example. Start from the
+[Quickstart](#quickstart), then open any entry in the [Patterns](#patterns)
+list and run it end to end. Copy the pattern into your own project and
+swap in your data — the patterns are reference implementations, not a
+package to install.
+
 ## Patterns
 
 | # | Example | What it demonstrates |
