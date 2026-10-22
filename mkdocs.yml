@@ -1,4 +1,4 @@
-site_name: gdal-patterns
+site_name: GDAL Patterns
 site_url: https://gdal.zqmlabs.com/
 site_description: GDAL patterns — raster translation, warp, translate, vector conversion, geospatial data processing
 site_author: ZQM Computing
@@ -6,6 +6,7 @@ repo_url: https://github.com/ZQM-Computing/gdal-patterns
 
 theme:
   name: material
+  custom_dir: docs/overrides
   features:
     - navigation.tabs
     - navigation.sections
