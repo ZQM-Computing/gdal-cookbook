@@ -1,5 +1,5 @@
 [project]
-name = "gdal-patterns"
+name = "gdal-cookbook"
 version = "0.1.0"
 description = "GDAL/OGR command-line patterns for geospatial data"
 readme = "README.md"
@@ -9,7 +9,7 @@ authors = [{name = "ZQM Computing", email = "zqmcomputing@gmail.com"}]
 keywords = ["gdal", "ogr", "geospatial", "raster", "vector"]
 
 [project.urls]
-Homepage = "https://github.com/ZQM-Computing/gdal-patterns"
+Homepage = "https://github.com/ZQM-Computing/gdal-cookbook"
 
 [tool.ruff]
 line-length = 120
