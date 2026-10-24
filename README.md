@@ -9,6 +9,7 @@
 <!-- markdownlint-enable MD033 -->
 <!-- ZQM-END -->
 
+![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg) ![GitHub](https://img.shields.io/github/stars/ZQM-Computing/gdal-cookbook?style=social)
 [![CI](https://github.com/ZQM-Computing/gdal-patterns/actions/workflows/ci.yml/badge.svg)](https://github.com/ZQM-Computing/gdal-patterns/actions/workflows/ci.yml)
 
 Production-tested GDAL/OGR patterns for geospatial data conversion, reprojection, clipping, and mosaicking — the command-line moves that show up in every data pipeline.
