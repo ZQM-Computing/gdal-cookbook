@@ -221,6 +221,142 @@ def test_all_shell_examples_execute(tmp_path):
         )
         assert band.get("minimum", 0) >= 0, f"{filename} unexpectedly contains negative raster values: {band}"
 
+    # Exercise nodata semantics with a synthetic raster containing a known hole.
+    # The center 64x64 window is explicitly nodata; surrounding pixels remain 200.
+    nodata_source = tmp_path / "nodata-source.tif"
+    subprocess.run(
+        [
+            "gdal_create",
+            "-q",
+            "-of",
+            "GTiff",
+            "-outsize",
+            "256",
+            "256",
+            "-bands",
+            "1",
+            "-ot",
+            "UInt16",
+            "-burn",
+            "200",
+            "-a_srs",
+            "EPSG:4326",
+            "-a_ullr",
+            "-10",
+            "10",
+            "10",
+            "-10",
+            "-a_nodata",
+            "0",
+            str(nodata_source),
+        ],
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+    subprocess.run(
+        [
+            "gdal_translate",
+            "-q",
+            "-of",
+            "GTiff",
+            "-srcwin",
+            "96",
+            "96",
+            "64",
+            "64",
+            "-burn",
+            "0",
+            "-a_nodata",
+            "0",
+            str(nodata_source),
+            str(tmp_path / "nodata-hole.tif"),
+        ],
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+    nodata_hole = tmp_path / "nodata-hole.tif"
+    # Build the test input using GDAL's raster calculator, preserving the
+    # source values outside the hole and setting only the center window to 0.
+    hole_source = tmp_path / "nodata-hole-source.tif"
+    subprocess.run(
+        [
+            "gdal_translate",
+            "-q",
+            "-of",
+            "GTiff",
+            str(nodata_source),
+            str(hole_source),
+        ],
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+    subprocess.run(
+        [
+            "gdal_rasterize",
+            "-burn",
+            "0",
+            "-init",
+            "200",
+            "-a_nodata",
+            "0",
+            "-te",
+            "-2.5",
+            "-2.5",
+            "2.5",
+            "2.5",
+            "-ts",
+            "64",
+            "64",
+            str(nodata_hole),
+        ],
+        check=False,
+        capture_output=True,
+        text=True,
+    )
+    nodata_output = tmp_path / "nodata-reprojected.tif"
+    subprocess.run(
+        [
+            "gdalwarp",
+            "-overwrite",
+            "-srcnodata",
+            "0",
+            "-dstnodata",
+            "0",
+            "-t_srs",
+            "EPSG:4326",
+            "-r",
+            "near",
+            str(nodata_source),
+            str(nodata_output),
+        ],
+        check=True,
+        capture_output=True,
+        text=True,
+        timeout=60,
+    )
+    nodata_info = raster_info(nodata_output)
+    nodata_band = nodata_info["bands"][0]
+    assert nodata_band.get("noDataValue") == 0, (
+        f"Reprojected raster must declare the requested nodata value 0: {nodata_band}"
+    )
+    assert nodata_band.get("minimum") == 200 and nodata_band.get("maximum") == 200, (
+        f"Nodata pixels must be excluded from valid-data statistics: {nodata_band}"
+    )
+    nodata_values = subprocess.run(
+        ["gdal_translate", "-q", "-of", "XYZ", str(nodata_output), "/vsistdout/"],
+        check=True,
+        capture_output=True,
+        text=True,
+        timeout=30,
+    ).stdout.splitlines()
+    values = [float(line.split()[2]) for line in nodata_values if line.strip()]
+    assert values and 0 in values and 200 in values, (
+        "Reprojection should preserve both declared nodata pixels and valid source pixels"
+    )
+
     wgs84 = assert_readable_raster(reprojection_dir / "synthetic_wgs84.tif")
     assert wgs84["size"] == [512, 256]
     assert wgs84["geoTransform"] == pytest.approx([-180, 360 / 512, 0, 90, 0, -180 / 256])
