@@ -208,3 +208,31 @@ def test_all_shell_examples_execute(tmp_path):
         info = assert_readable_raster(reprojection_dir / filename)
         wkt = info.get("coordinateSystem", {}).get("wkt", "")
         assert f'ID["EPSG",{epsg}]' in wkt, f"{filename} should carry EPSG:{epsg}; found CRS WKT: {wkt}"
+
+        assert len(info["size"]) == 2 and all(value > 0 for value in info["size"]), (
+            f"{filename} has invalid dimensions after reprojection: {info.get('size')}"
+        )
+        geotransform = info.get("geoTransform")
+        assert geotransform and len(geotransform) == 6, f"{filename} is missing a valid affine geotransform"
+        assert geotransform[1] != 0 and geotransform[5] != 0, f"{filename} has zero pixel resolution: {geotransform}"
+        band = info["bands"][0]
+        assert band.get("maximum") == 200, (
+            f"{filename} should preserve the synthetic source value 200; band statistics: {band}"
+        )
+        assert band.get("minimum", 0) >= 0, f"{filename} unexpectedly contains negative raster values: {band}"
+
+    wgs84 = assert_readable_raster(reprojection_dir / "synthetic_wgs84.tif")
+    assert wgs84["size"] == [512, 256]
+    assert wgs84["geoTransform"] == pytest.approx([-180, 360 / 512, 0, 90, 0, -180 / 256])
+
+    webmercator = assert_readable_raster(reprojection_dir / "synthetic_webmercator.tif")
+    webmercator_corners = webmercator.get("cornerCoordinates", {})
+    upper_left = webmercator_corners.get("upperLeft")
+    lower_right = webmercator_corners.get("lowerRight")
+    assert upper_left and lower_right, "Web Mercator output is missing corner coordinates"
+    assert upper_left[0] < -20_000_000 and lower_right[0] > 20_000_000, (
+        f"Web Mercator output does not span the expected projected world extent: {webmercator_corners}"
+    )
+    assert upper_left[1] > 20_000_000 and lower_right[1] < -20_000_000, (
+        f"Web Mercator output does not span the expected projected latitude extent: {webmercator_corners}"
+    )
