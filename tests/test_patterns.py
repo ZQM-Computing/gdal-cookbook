@@ -132,3 +132,26 @@ def test_all_shell_examples_execute(tmp_path):
                 assert info.get("size") and info.get("bands"), f"VRT has no raster data: {path}"
             else:
                 assert_readable_raster(path)
+
+    # Assert semantic properties as well as mere file readability.
+    translate_dir = copied_examples / "02-gdal-translate" / "output"
+    source_info = assert_readable_raster(translate_dir / "synthetic_raster.tif")
+    assert source_info["size"] == [256, 256]
+    assert len(source_info["bands"]) == 3
+
+    subset_info = assert_readable_raster(translate_dir / "synthetic_subset.tif")
+    assert subset_info["size"] == [128, 128], "srcwin output must be exactly 128x128 pixels"
+    assert len(subset_info["bands"]) == 3
+
+    reprojection_dir = copied_examples / "03-gdalwarp-reprojection" / "output"
+    expected_epsg = {
+        "synthetic_wgs84.tif": "4326",
+        "synthetic_webmercator.tif": "3857",
+        "synthetic_utm33n.tif": "32633",
+    }
+    for filename, epsg in expected_epsg.items():
+        info = assert_readable_raster(reprojection_dir / filename)
+        wkt = info.get("coordinateSystem", {}).get("wkt", "")
+        assert f'ID["EPSG",{epsg}]' in wkt, (
+            f"{filename} should carry EPSG:{epsg}; found CRS WKT: {wkt}"
+        )
