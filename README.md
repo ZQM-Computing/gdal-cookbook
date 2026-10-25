@@ -90,11 +90,11 @@ gdal-cookbook/
 ## Validation
 
 ```bash
-pip install pytest
-pytest            # checks script presence, size, and executability
+python -m pip install pytest
+python -m pytest -q
 ```
 
-CI installs `gdal-bin` and executes all five shell examples against synthetic data, verifying their generated artifacts. The Python bindings example is syntax-checked; its runtime requires a Python environment with matching GDAL bindings and NumPy.
+The suite checks the exact example inventory, shell syntax, Python syntax, and that examples do not download unpinned external data. With the required GDAL CLI tools installed, it also executes all five shell examples against synthetic data and verifies the generated raster/vector artifacts. CI installs `gdal-bin` and runs this integration path. The Python bindings example is syntax-checked only; its runtime requires a Python environment with matching GDAL bindings and NumPy.
 
 ## Roadmap
 
