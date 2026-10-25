@@ -12,7 +12,7 @@
 ![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg) ![GitHub](https://img.shields.io/github/stars/ZQM-Computing/gdal-cookbook?style=social)
 [![CI](https://github.com/ZQM-Computing/gdal-cookbook/actions/workflows/ci.yml/badge.svg)](https://github.com/ZQM-Computing/gdal-cookbook/actions/workflows/ci.yml)
 
-Runnable GDAL/OGR command-line examples for geospatial data conversion, raster translation, reprojection, clipping, mosaics, and batch processing. Synthetic fixtures and the documented CI checks make it easier to reproduce each tested workflow; verify versions and data-specific assumptions before production use.
+A practical **GDAL/OGR command-line cookbook** for geospatial data engineering: vector and raster conversion, reprojection, clipping, mosaicking, format inspection, and repeatable batch processing. The examples are aimed at GIS analysts and data engineers building reproducible data pipelines. Synthetic fixtures and CI help verify documented workflows; check GDAL versions, CRS assumptions, nodata handling, and input/output paths against your data before production use.
 
 ## Repository role and status
 
