@@ -17,3 +17,4 @@ target-version = "py311"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+markers = ["integration: executes examples using GDAL/OGR command-line tools"]
