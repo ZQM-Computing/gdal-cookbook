@@ -114,6 +114,35 @@ def test_translate_example_has_expected_raster_dimensions_and_band_count(tmp_pat
     assert len(subset["bands"]) == 3
 
 
+
+def test_reprojection_example_uses_valid_regional_extent_and_expected_crs(tmp_path: Path) -> None:
+    output_dir = tmp_path / "reprojection"
+    env = os.environ.copy()
+    env["OUTPUT_DIR"] = str(output_dir)
+    subprocess.run(
+        ["bash", str(ROOT / "examples/03-gdalwarp-reprojection/run.sh")],
+        cwd=ROOT,
+        env=env,
+        check=True,
+        capture_output=True,
+        text=True,
+        timeout=120,
+    )
+
+    expected_epsg = {
+        "synthetic_wgs84.tif": "4326",
+        "synthetic_webmercator.tif": "3857",
+        "synthetic_utm33n.tif": "32633",
+    }
+    for filename, epsg_code in expected_epsg.items():
+        info = gdalinfo_json(output_dir / filename)
+        assert info["size"][0] > 0 and info["size"][1] > 0
+        wkt = info.get("coordinateSystem", {}).get("wkt", "")
+        assert f'ID["EPSG",{epsg_code}]' in wkt, (
+            f"{filename} should use EPSG:{epsg_code}; CRS WKT was: {wkt}"
+        )
+
+
 def test_ogr_conversion_preserves_three_features(tmp_path: Path) -> None:
     output_dir = tmp_path / "vector"
     env = os.environ.copy()
