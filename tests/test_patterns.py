@@ -222,7 +222,7 @@ def test_all_shell_examples_execute(tmp_path):
         assert band.get("minimum", 0) >= 0, f"{filename} unexpectedly contains negative raster values: {band}"
 
     # Exercise nodata semantics with a synthetic raster containing a known hole.
-    # The center 64x64 window is explicitly nodata; surrounding pixels remain 200.
+    # The central polygon is burned to 0, which is also the declared nodata value.
     nodata_source = tmp_path / "nodata-source.tif"
     subprocess.run(
         [
@@ -254,67 +254,19 @@ def test_all_shell_examples_execute(tmp_path):
         capture_output=True,
         text=True,
     )
+    hole_vector = tmp_path / "nodata-hole.geojson"
+    hole_vector.write_text(
+        '{"type":"FeatureCollection","features":[{"type":"Feature",'
+        '"properties":{},"geometry":{"type":"Polygon","coordinates":'
+        '[[[-2.5,-2.5],[2.5,-2.5],[2.5,2.5],[-2.5,2.5],[-2.5,-2.5]]]}}]}',
+        encoding="utf-8",
+    )
     subprocess.run(
-        [
-            "gdal_translate",
-            "-q",
-            "-of",
-            "GTiff",
-            "-srcwin",
-            "96",
-            "96",
-            "64",
-            "64",
-            "-burn",
-            "0",
-            "-a_nodata",
-            "0",
-            str(nodata_source),
-            str(tmp_path / "nodata-hole.tif"),
-        ],
+        ["gdal_rasterize", "-burn", "0", str(hole_vector), str(nodata_source)],
         check=True,
         capture_output=True,
         text=True,
-    )
-    nodata_hole = tmp_path / "nodata-hole.tif"
-    # Build the test input using GDAL's raster calculator, preserving the
-    # source values outside the hole and setting only the center window to 0.
-    hole_source = tmp_path / "nodata-hole-source.tif"
-    subprocess.run(
-        [
-            "gdal_translate",
-            "-q",
-            "-of",
-            "GTiff",
-            str(nodata_source),
-            str(hole_source),
-        ],
-        check=True,
-        capture_output=True,
-        text=True,
-    )
-    subprocess.run(
-        [
-            "gdal_rasterize",
-            "-burn",
-            "0",
-            "-init",
-            "200",
-            "-a_nodata",
-            "0",
-            "-te",
-            "-2.5",
-            "-2.5",
-            "2.5",
-            "2.5",
-            "-ts",
-            "64",
-            "64",
-            str(nodata_hole),
-        ],
-        check=False,
-        capture_output=True,
-        text=True,
+        timeout=30,
     )
     nodata_output = tmp_path / "nodata-reprojected.tif"
     subprocess.run(
@@ -345,16 +297,22 @@ def test_all_shell_examples_execute(tmp_path):
     assert nodata_band.get("minimum") == 200 and nodata_band.get("maximum") == 200, (
         f"Nodata pixels must be excluded from valid-data statistics: {nodata_band}"
     )
-    nodata_values = subprocess.run(
-        ["gdal_translate", "-q", "-of", "XYZ", str(nodata_output), "/vsistdout/"],
-        check=True,
-        capture_output=True,
-        text=True,
-        timeout=30,
-    ).stdout.splitlines()
-    values = [float(line.split()[2]) for line in nodata_values if line.strip()]
-    assert values and 0 in values and 200 in values, (
-        "Reprojection should preserve both declared nodata pixels and valid source pixels"
+
+    def sample_pixel(path: Path, x: int, y: int) -> float:
+        result = subprocess.run(
+            ["gdallocationinfo", "-valonly", str(path), str(x), str(y)],
+            check=True,
+            capture_output=True,
+            text=True,
+            timeout=30,
+        )
+        return float(result.stdout.strip())
+
+    assert sample_pixel(nodata_output, 128, 128) == 0, (
+        "The central nodata region must remain nodata after reprojection"
+    )
+    assert sample_pixel(nodata_output, 32, 32) == 200, (
+        "Valid pixels outside the nodata region must preserve the source value"
     )
 
     wgs84 = assert_readable_raster(reprojection_dir / "synthetic_wgs84.tif")
