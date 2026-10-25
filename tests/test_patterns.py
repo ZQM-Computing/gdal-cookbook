@@ -177,8 +177,7 @@ def test_all_shell_examples_execute(tmp_path):
     for label, info in (("source", source_info), ("subset", subset_info)):
         for band in info["bands"]:
             assert band.get("minimum") == 128 and band.get("maximum") == 128, (
-                f"{label} raster should contain only the synthetic value 128; "
-                f"band statistics: {band}"
+                f"{label} raster should contain only the synthetic value 128; band statistics: {band}"
             )
     source_gt = source_info["geoTransform"]
     subset_gt = subset_info["geoTransform"]
@@ -191,15 +190,12 @@ def test_all_shell_examples_execute(tmp_path):
     # Check mosaic extent, dimensions, and the actual values from each source tile.
     mosaic_dir = copied_examples / "04-virtual-rasters" / "output"
     mosaic = assert_readable_raster(mosaic_dir / "synthetic_mosaic.tif")
-    assert mosaic["size"] == [384, 128], (
-        f"Three adjacent 128x128 tiles should form a 384x128 mosaic: {mosaic['size']}"
-    )
+    assert mosaic["size"] == [384, 128], f"Three adjacent 128x128 tiles should form a 384x128 mosaic: {mosaic['size']}"
     mosaic_gt = mosaic["geoTransform"]
     assert mosaic_gt == pytest.approx([-10, 30 / 384, 0, 10, 0, -10 / 128])
     mosaic_band = mosaic["bands"][0]
     assert mosaic_band.get("minimum") == 60 and mosaic_band.get("maximum") == 180, (
-        "Mosaic must retain all three input tile values (60, 120, 180); "
-        f"band statistics: {mosaic_band}"
+        f"Mosaic must retain all three input tile values (60, 120, 180); band statistics: {mosaic_band}"
     )
 
     reprojection_dir = copied_examples / "03-gdalwarp-reprojection" / "output"
