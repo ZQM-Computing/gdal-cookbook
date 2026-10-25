@@ -120,7 +120,10 @@ def test_all_shell_examples_execute(tmp_path):
             for line in result.stdout.splitlines()
             if line.strip().startswith("Feature Count:")
         ]
-        assert counts and any(count > 0 for count in counts), f"No features found: {path}"
+        assert counts == [3], f"Expected exactly 3 converted point features in {path}; got {counts}"
+        assert 'ID["EPSG",4326]' in result.stdout, (
+            f"Expected converted vector to retain EPSG:4326 CRS: {path}"
+        )
 
     for example, paths in outputs.items():
         for relative in paths:
