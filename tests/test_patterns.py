@@ -100,7 +100,7 @@ def test_all_shell_examples_execute(tmp_path):
 
     def raster_info(path: Path) -> dict:
         result = subprocess.run(
-            ["gdalinfo", "-json", str(path)],
+            ["gdalinfo", "-stats", "-json", str(path)],
             check=True,
             capture_output=True,
             text=True,
@@ -171,6 +171,32 @@ def test_all_shell_examples_execute(tmp_path):
     subset_info = assert_readable_raster(translate_dir / "synthetic_subset.tif")
     assert subset_info["size"] == [128, 128], "srcwin output must be exactly 128x128 pixels"
     assert len(subset_info["bands"]) == 3
+
+    # The source is a constant-value raster with a known geotransform. Verify
+    # pixel values and the shifted origin produced by the 64,64,128,128 window.
+    for label, info in (("source", source_info), ("subset", subset_info)):
+        for band in info["bands"]:
+            assert band.get("minimum") == 128 and band.get("maximum") == 128, (
+                f"{label} raster should contain only the synthetic value 128; band statistics: {band}"
+            )
+    source_gt = source_info["geoTransform"]
+    subset_gt = subset_info["geoTransform"]
+    assert source_gt == pytest.approx([-180, 360 / 256, 0, 90, 0, -180 / 256])
+    assert subset_gt == pytest.approx([-90, 360 / 256, 0, 45, 0, -180 / 256]), (
+        "srcwin subset must shift its origin by 64 source pixels in x and y"
+    )
+
+    # The three adjacent 128x128 tiles span x=-10..20 and y=0..10.
+    # Check mosaic extent, dimensions, and the actual values from each source tile.
+    mosaic_dir = copied_examples / "04-virtual-rasters" / "output"
+    mosaic = assert_readable_raster(mosaic_dir / "synthetic_mosaic.tif")
+    assert mosaic["size"] == [384, 128], f"Three adjacent 128x128 tiles should form a 384x128 mosaic: {mosaic['size']}"
+    mosaic_gt = mosaic["geoTransform"]
+    assert mosaic_gt == pytest.approx([-10, 30 / 384, 0, 10, 0, -10 / 128])
+    mosaic_band = mosaic["bands"][0]
+    assert mosaic_band.get("minimum") == 60 and mosaic_band.get("maximum") == 180, (
+        f"Mosaic must retain all three input tile values (60, 120, 180); band statistics: {mosaic_band}"
+    )
 
     reprojection_dir = copied_examples / "03-gdalwarp-reprojection" / "output"
     expected_epsg = {
