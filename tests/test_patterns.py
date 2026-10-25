@@ -97,6 +97,7 @@ def test_all_shell_examples_execute(tmp_path):
         "04-virtual-rasters": ["output/synthetic_mosaic.vrt", "output/synthetic_mosaic.tif"],
         "05-batch-processing": ["output/batch_stack.vrt", "output/batch_input_1.tif", "output/batch_input_5.tif"],
     }
+
     def raster_info(path: Path) -> dict:
         result = subprocess.run(
             ["gdalinfo", "-json", str(path)],
