@@ -16,7 +16,7 @@ EXPECTED = {
     "05-batch-processing/run.sh",
     "06-python-integration/run.py",
 }
-GDAL_TOOLS = ["ogr2ogr", "gdal_create", "gdal_translate", "gdalwarp", "gdalbuildvrt", "gdalinfo"]
+GDAL_TOOLS = ["ogr2ogr", "ogrinfo", "gdal_create", "gdal_translate", "gdalwarp", "gdalbuildvrt", "gdalinfo"]
 
 
 def test_exact_example_inventory():
@@ -84,6 +84,51 @@ def test_all_shell_examples_execute(tmp_path):
         "04-virtual-rasters": ["output/synthetic_mosaic.vrt", "output/synthetic_mosaic.tif"],
         "05-batch-processing": ["output/batch_stack.vrt", "output/batch_input_1.tif", "output/batch_input_5.tif"],
     }
+    def raster_info(path: Path) -> dict:
+        result = subprocess.run(
+            ["gdalinfo", "-json", str(path)],
+            check=True,
+            capture_output=True,
+            text=True,
+            timeout=30,
+        )
+        import json
+
+        return json.loads(result.stdout)
+
+    def assert_readable_raster(path: Path) -> dict:
+        assert path.is_file() and path.stat().st_size > 0, f"Missing or empty raster: {path}"
+        info = raster_info(path)
+        assert len(info.get("size", [])) == 2 and all(value > 0 for value in info["size"]), (
+            f"Invalid raster dimensions: {path}"
+        )
+        assert info.get("bands"), f"Raster has no bands: {path}"
+        return info
+
+    def assert_vector_has_features(path: Path) -> None:
+        assert path.is_file() and path.stat().st_size > 0, f"Missing or empty vector: {path}"
+        result = subprocess.run(
+            ["ogrinfo", "-ro", "-al", "-so", str(path)],
+            check=True,
+            capture_output=True,
+            text=True,
+            timeout=30,
+        )
+        assert "Feature Count:" in result.stdout, f"No readable layer metadata: {path}"
+        counts = [
+            int(line.split(":", 1)[1].strip())
+            for line in result.stdout.splitlines()
+            if line.strip().startswith("Feature Count:")
+        ]
+        assert counts and any(count > 0 for count in counts), f"No features found: {path}"
+
     for example, paths in outputs.items():
         for relative in paths:
-            assert (copied_examples / example / relative).is_file(), f"Missing generated artifact: {example}/{relative}"
+            path = copied_examples / example / relative
+            if relative.endswith((".geojson", ".gpkg", ".shp")):
+                assert_vector_has_features(path)
+            elif relative.endswith(".vrt"):
+                info = assert_readable_raster(path)
+                assert info.get("size") and info.get("bands"), f"VRT has no raster data: {path}"
+            else:
+                assert_readable_raster(path)
