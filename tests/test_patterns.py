@@ -1,5 +1,6 @@
 """Structural and runtime tests for the GDAL/OGR cookbook examples."""
 
+import re
 import shutil
 import subprocess
 from pathlib import Path
@@ -121,7 +122,7 @@ def test_all_shell_examples_execute(tmp_path):
             if line.strip().startswith("Feature Count:")
         ]
         assert counts == [3], f"Expected exactly 3 converted point features in {path}; got {counts}"
-        assert 'ID["EPSG",4326]' in result.stdout, (
+        assert re.search(r'(?:ID|AUTHORITY)\["EPSG",\s*"?4326"?\]', result.stdout), (
             f"Expected converted vector to retain EPSG:4326 CRS: {path}"
         )
 
