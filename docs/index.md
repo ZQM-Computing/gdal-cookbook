@@ -1,3 +1,6 @@
+Title: GDAL Patterns
+Description: Runnable GDAL/OGR recipes for raster and vector conversion, reprojection, clipping, mosaics, metadata inspection, and repeatable geospatial data processing.
+
 # GDAL Patterns
 
 Production-tested **GDAL/OGR** command-line patterns for raster and vector geospatial data processing — conversion, reprojection, clipping, mosaicking, and batch processing.
