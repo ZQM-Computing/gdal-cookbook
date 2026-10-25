@@ -214,16 +214,12 @@ def test_all_shell_examples_execute(tmp_path):
         )
         geotransform = info.get("geoTransform")
         assert geotransform and len(geotransform) == 6, f"{filename} is missing a valid affine geotransform"
-        assert geotransform[1] != 0 and geotransform[5] != 0, (
-            f"{filename} has zero pixel resolution: {geotransform}"
-        )
+        assert geotransform[1] != 0 and geotransform[5] != 0, f"{filename} has zero pixel resolution: {geotransform}"
         band = info["bands"][0]
         assert band.get("maximum") == 200, (
             f"{filename} should preserve the synthetic source value 200; band statistics: {band}"
         )
-        assert band.get("minimum", 0) >= 0, (
-            f"{filename} unexpectedly contains negative raster values: {band}"
-        )
+        assert band.get("minimum", 0) >= 0, f"{filename} unexpectedly contains negative raster values: {band}"
 
     wgs84 = assert_readable_raster(reprojection_dir / "synthetic_wgs84.tif")
     assert wgs84["size"] == [512, 256]
