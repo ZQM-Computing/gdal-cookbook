@@ -1,6 +1,6 @@
 site_name: GDAL Patterns
 site_url: https://gdal.zqmlabs.com/
-site_description: GDAL patterns — raster translation, warp, translate, vector conversion, geospatial data processing
+site_description: Runnable GDAL/OGR recipes for raster and vector conversion, reprojection, clipping, mosaics, metadata inspection, and repeatable geospatial data processing.
 site_author: ZQM Computing
 repo_url: https://github.com/ZQM-Computing/gdal-cookbook
 
@@ -14,6 +14,7 @@ theme:
     - search.highlight
 
 markdown_extensions:
+  - meta
   - admonition
   - codehilite
   - toc:

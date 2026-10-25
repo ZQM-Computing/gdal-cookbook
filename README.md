@@ -12,7 +12,7 @@
 ![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg) ![GitHub](https://img.shields.io/github/stars/ZQM-Computing/gdal-cookbook?style=social)
 [![CI](https://github.com/ZQM-Computing/gdal-cookbook/actions/workflows/ci.yml/badge.svg)](https://github.com/ZQM-Computing/gdal-cookbook/actions/workflows/ci.yml)
 
-Runnable GDAL/OGR examples for vector conversion, raster translation, reprojection, virtual mosaics, and batch processing. The five shell examples use synthetic inputs and are executed in CI.
+Runnable GDAL/OGR command-line examples for geospatial data conversion, raster translation, reprojection, clipping, mosaics, and batch processing. Synthetic fixtures and the documented CI checks make it easier to reproduce each tested workflow; verify versions and data-specific assumptions before production use.
 
 ## Repository role and status
 
