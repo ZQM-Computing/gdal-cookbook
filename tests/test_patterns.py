@@ -122,7 +122,7 @@ def test_all_shell_examples_execute(tmp_path):
     def assert_vector_has_features(path: Path) -> None:
         assert path.is_file() and path.stat().st_size > 0, f"Missing or empty vector: {path}"
         result = subprocess.run(
-            ["ogrinfo", "-ro", "-al", "-so", str(path)],
+            ["ogrinfo", "-ro", "-al", str(path)],
             check=True,
             capture_output=True,
             text=True,
@@ -138,6 +138,18 @@ def test_all_shell_examples_execute(tmp_path):
         assert re.search(r'(?:ID|AUTHORITY)\["EPSG",\s*"?4326"?\]', result.stdout), (
             f"Expected converted vector to retain EPSG:4326 CRS: {path}"
         )
+        for name in ("ALPHA", "BRAVO", "CHARLIE"):
+            assert name in result.stdout, f"Converted vector is missing feature name {name}: {path}"
+        expected_points = (
+            ("-73.9857", "40.7484"),
+            ("-118.2437", "34.0522"),
+            ("-87.6298", "41.8781"),
+        )
+        for longitude, latitude in expected_points:
+            point_pattern = rf"POINT\s*\(\s*{re.escape(longitude)}\s+{re.escape(latitude)}\s*\)"
+            assert re.search(point_pattern, result.stdout), (
+                f"Converted vector is missing expected point ({longitude}, {latitude}): {path}"
+            )
 
     for example, paths in outputs.items():
         for relative in paths:
