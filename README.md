@@ -90,11 +90,13 @@ gdal-cookbook/
 ## Validation
 
 ```bash
-python -m pip install pytest
+python -m pip install pytest ruff
+python -m ruff check examples tests
+python -m ruff format --check examples tests
 python -m pytest -q
 ```
 
-The suite checks the exact example inventory, shell syntax, Python syntax, and that examples do not download unpinned external data. With the required GDAL CLI tools installed, it also executes all five shell examples against synthetic data and verifies the generated raster/vector artifacts. CI installs `gdal-bin` and runs this integration path. The Python bindings example is syntax-checked only; its runtime requires a Python environment with matching GDAL bindings and NumPy.
+The suite checks the exact example inventory, shell syntax, Python syntax, and that examples do not download unpinned external data. CI also enforces Ruff lint and formatting checks across `examples/` and `tests/`. With the required GDAL CLI tools installed, it also executes all five shell examples against synthetic data and verifies the generated raster/vector artifacts. CI installs `gdal-bin` and runs this integration path. The Python bindings example is syntax-checked only; its runtime requires a Python environment with matching GDAL bindings and NumPy.
 
 ## Roadmap
 

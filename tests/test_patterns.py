@@ -79,12 +79,25 @@ def test_all_shell_examples_execute(tmp_path):
         )
 
     outputs = {
-        "01-ogr2ogr-conversion": ["output/synthetic_points.geojson", "output/synthetic_points.gpkg", "output/synthetic_points.shp"],
-        "02-gdal-translate": ["output/synthetic_raster.tif", "output/synthetic_raster.png", "output/synthetic_subset.tif"],
-        "03-gdalwarp-reprojection": ["output/synthetic_wgs84.tif", "output/synthetic_webmercator.tif", "output/synthetic_utm33n.tif"],
+        "01-ogr2ogr-conversion": [
+            "output/synthetic_points.geojson",
+            "output/synthetic_points.gpkg",
+            "output/synthetic_points.shp",
+        ],
+        "02-gdal-translate": [
+            "output/synthetic_raster.tif",
+            "output/synthetic_raster.png",
+            "output/synthetic_subset.tif",
+        ],
+        "03-gdalwarp-reprojection": [
+            "output/synthetic_wgs84.tif",
+            "output/synthetic_webmercator.tif",
+            "output/synthetic_utm33n.tif",
+        ],
         "04-virtual-rasters": ["output/synthetic_mosaic.vrt", "output/synthetic_mosaic.tif"],
         "05-batch-processing": ["output/batch_stack.vrt", "output/batch_input_1.tif", "output/batch_input_5.tif"],
     }
+
     def raster_info(path: Path) -> dict:
         result = subprocess.run(
             ["gdalinfo", "-json", str(path)],
@@ -156,6 +169,4 @@ def test_all_shell_examples_execute(tmp_path):
     for filename, epsg in expected_epsg.items():
         info = assert_readable_raster(reprojection_dir / filename)
         wkt = info.get("coordinateSystem", {}).get("wkt", "")
-        assert f'ID["EPSG",{epsg}]' in wkt, (
-            f"{filename} should carry EPSG:{epsg}; found CRS WKT: {wkt}"
-        )
+        assert f'ID["EPSG",{epsg}]' in wkt, f"{filename} should carry EPSG:{epsg}; found CRS WKT: {wkt}"
