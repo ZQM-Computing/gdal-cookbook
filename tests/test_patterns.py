@@ -258,7 +258,7 @@ def test_all_shell_examples_execute(tmp_path):
     hole_vector.write_text(
         '{"type":"FeatureCollection","features":[{"type":"Feature",'
         '"properties":{},"geometry":{"type":"Polygon","coordinates":'
-        '[[[-2.5,-2.5],[2.5,-2.5],[2.5,2.5],[-2.5,2.5],[-2.5,-2.5]]]}}]}',
+        "[[[-2.5,-2.5],[2.5,-2.5],[2.5,2.5],[-2.5,2.5],[-2.5,-2.5]]]}}]}",
         encoding="utf-8",
     )
     subprocess.run(
@@ -308,9 +308,7 @@ def test_all_shell_examples_execute(tmp_path):
         )
         return float(result.stdout.strip())
 
-    assert sample_pixel(nodata_output, 128, 128) == 0, (
-        "The central nodata region must remain nodata after reprojection"
-    )
+    assert sample_pixel(nodata_output, 128, 128) == 0, "The central nodata region must remain nodata after reprojection"
     assert sample_pixel(nodata_output, 32, 32) == 200, (
         "Valid pixels outside the nodata region must preserve the source value"
     )
