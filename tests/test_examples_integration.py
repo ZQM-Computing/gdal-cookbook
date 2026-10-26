@@ -189,7 +189,12 @@ def test_vrt_examples_expose_expected_band_counts(tmp_path: Path) -> None:
         env["OUTPUT_DIR"] = str(output_dir)
         subprocess.run(
             ["bash", str(ROOT / "examples" / example / "run.sh")],
-            cwd=ROOT, env=env, check=True, capture_output=True, text=True, timeout=120
+            cwd=ROOT,
+        env=env,
+        check=True,
+        capture_output=True,
+        text=True,
+        timeout=120,
         )
         info = gdalinfo_json(output_dir / output_name)
         assert len(info["bands"]) == expected_bands
