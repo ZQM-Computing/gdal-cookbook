@@ -6,7 +6,7 @@ OUTPUT_DIR="${OUTPUT_DIR:-$SCRIPT_DIR/output}"
 mkdir -p "$OUTPUT_DIR"
 
 gdal_create -outsize 512 256 -bands 1 -ot UInt16 -burn 200 \
-  -a_srs EPSG:4326 -a_ullr -180 90 180 -90 "$OUTPUT_DIR/synthetic_wgs84.tif"
+  -a_srs EPSG:4326 -a_ullr 10 60 20 40 "$OUTPUT_DIR/synthetic_wgs84.tif"
 echo "[1/3] Synthetic WGS84 raster created."
 gdalwarp -t_srs EPSG:3857 -r bilinear \
   "$OUTPUT_DIR/synthetic_wgs84.tif" "$OUTPUT_DIR/synthetic_webmercator.tif"

@@ -315,16 +315,19 @@ def test_all_shell_examples_execute(tmp_path):
 
     wgs84 = assert_readable_raster(reprojection_dir / "synthetic_wgs84.tif")
     assert wgs84["size"] == [512, 256]
-    assert wgs84["geoTransform"] == pytest.approx([-180, 360 / 512, 0, 90, 0, -180 / 256])
+    assert wgs84["geoTransform"] == pytest.approx([10, 10 / 512, 0, 60, 0, -20 / 256])
+    wgs84_corners = wgs84.get("cornerCoordinates", {})
+    assert wgs84_corners.get("upperLeft") == pytest.approx([10, 60])
+    assert wgs84_corners.get("lowerRight") == pytest.approx([20, 40])
 
     webmercator = assert_readable_raster(reprojection_dir / "synthetic_webmercator.tif")
     webmercator_corners = webmercator.get("cornerCoordinates", {})
     upper_left = webmercator_corners.get("upperLeft")
     lower_right = webmercator_corners.get("lowerRight")
     assert upper_left and lower_right, "Web Mercator output is missing corner coordinates"
-    assert upper_left[0] < -20_000_000 and lower_right[0] > 20_000_000, (
-        f"Web Mercator output does not span the expected projected world extent: {webmercator_corners}"
+    assert 1_000_000 < upper_left[0] < 1_200_000 and 2_100_000 < lower_right[0] < 2_300_000, (
+        f"Web Mercator output does not match the regional source longitude extent: {webmercator_corners}"
     )
-    assert upper_left[1] > 20_000_000 and lower_right[1] < -20_000_000, (
-        f"Web Mercator output does not span the expected projected latitude extent: {webmercator_corners}"
+    assert 8_000_000 < upper_left[1] < 8_500_000 and 4_500_000 < lower_right[1] < 5_000_000, (
+        f"Web Mercator output does not match the regional source latitude extent: {webmercator_corners}"
     )
