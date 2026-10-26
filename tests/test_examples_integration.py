@@ -15,7 +15,15 @@ from pathlib import Path
 import pytest
 
 ROOT = Path(__file__).resolve().parents[1]
-GDAL_CLI = ("gdal_create", "gdalinfo", "gdal_translate", "gdalwarp", "gdalbuildvrt", "ogr2ogr", "ogrinfo")
+GDAL_CLI = (
+    "gdal_create",
+    "gdalinfo",
+    "gdal_translate",
+    "gdalwarp",
+    "gdalbuildvrt",
+    "ogr2ogr",
+    "ogrinfo",
+)
 EXAMPLES = {
     "01-ogr2ogr-conversion": (
         "synthetic_points.geojson",
@@ -102,7 +110,12 @@ def test_translate_example_has_expected_raster_dimensions_and_band_count(tmp_pat
     env["OUTPUT_DIR"] = str(output_dir)
     subprocess.run(
         ["bash", str(ROOT / "examples/02-gdal-translate/run.sh")],
-        cwd=ROOT, env=env, check=True, capture_output=True, text=True, timeout=120
+        cwd=ROOT,
+        env=env,
+        check=True,
+        capture_output=True,
+        text=True,
+        timeout=120,
     )
 
     source = gdalinfo_json(output_dir / "synthetic_raster.tif")
@@ -137,9 +150,7 @@ def test_reprojection_example_uses_valid_regional_extent_and_expected_crs(tmp_pa
         info = gdalinfo_json(output_dir / filename)
         assert info["size"][0] > 0 and info["size"][1] > 0
         wkt = info.get("coordinateSystem", {}).get("wkt", "")
-        assert f'ID["EPSG",{epsg_code}]' in wkt, (
-            f"{filename} should use EPSG:{epsg_code}; CRS WKT was: {wkt}"
-        )
+        assert f'ID["EPSG",{epsg_code}]' in wkt, f"{filename} should use EPSG:{epsg_code}; CRS WKT was: {wkt}"
 
 
 def test_ogr_conversion_preserves_three_features(tmp_path: Path) -> None:
@@ -153,7 +164,11 @@ def test_ogr_conversion_preserves_three_features(tmp_path: Path) -> None:
 
     result = subprocess.run(
         ["ogrinfo", "-ro", "-so", "-al", str(output_dir / "synthetic_points.gpkg")],
-        text=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=False, timeout=30
+        text=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+        check=False,
+        timeout=30,
     )
     assert result.returncode == 0, result.stdout
     assert "Feature Count: 3" in result.stdout
