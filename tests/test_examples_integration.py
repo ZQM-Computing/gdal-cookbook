@@ -126,7 +126,6 @@ def test_translate_example_has_expected_raster_dimensions_and_band_count(tmp_pat
     assert len(subset["bands"]) == 3
 
 
-
 def test_reprojection_example_uses_valid_regional_extent_and_expected_crs(tmp_path: Path) -> None:
     output_dir = tmp_path / "reprojection"
     env = os.environ.copy()
@@ -159,7 +158,12 @@ def test_ogr_conversion_preserves_three_features(tmp_path: Path) -> None:
     env["OUTPUT_DIR"] = str(output_dir)
     subprocess.run(
         ["bash", str(ROOT / "examples/01-ogr2ogr-conversion/run.sh")],
-        cwd=ROOT, env=env, check=True, capture_output=True, text=True, timeout=120
+        cwd=ROOT,
+        env=env,
+        check=True,
+        capture_output=True,
+        text=True,
+        timeout=120,
     )
 
     result = subprocess.run(
