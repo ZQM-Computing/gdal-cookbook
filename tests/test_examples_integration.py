@@ -56,6 +56,7 @@ EXAMPLES = {
         "batch_input_5.tif",
         "batch_stack.vrt",
     ),
+    "07-cog-creation": ("synthetic_source.tif", "synthetic_cog.tif"),
 }
 
 
@@ -125,6 +126,30 @@ def test_translate_example_has_expected_raster_dimensions_and_band_count(tmp_pat
     assert len(source["bands"]) == 3
     assert subset["size"] == [128, 128]
     assert len(subset["bands"]) == 3
+
+
+def test_cog_creation_has_cog_layout_and_internal_overviews(tmp_path: Path) -> None:
+    output_dir = tmp_path / "cog"
+    env = os.environ.copy()
+    env["OUTPUT_DIR"] = str(output_dir)
+    subprocess.run(
+        ["bash", str(ROOT / "examples/07-cog-creation/run.sh")],
+        cwd=ROOT,
+        env=env,
+        check=True,
+        capture_output=True,
+        text=True,
+        timeout=120,
+    )
+
+    info = gdalinfo_json(output_dir / "synthetic_cog.tif")
+    assert info["size"] == [1024, 1024]
+    assert len(info["bands"]) == 3
+    image_structure = info.get("metadata", {}).get("IMAGE_STRUCTURE", {})
+    assert image_structure.get("LAYOUT") == "COG", (
+        f"Expected GDAL to identify the output as a COG; metadata was {image_structure}"
+    )
+    assert info["bands"][0].get("overviews"), "COG should contain internal overviews"
 
 
 def test_reprojection_example_uses_valid_regional_extent_and_expected_crs(tmp_path: Path) -> None:
