@@ -4,6 +4,7 @@ These tests execute each shell example against isolated temporary output paths,
 then assert useful output properties instead of treating a zero exit code as
 proof that the spatial operation produced the intended artifact.
 """
+
 from __future__ import annotations
 
 import json
@@ -149,9 +150,7 @@ def test_reprojection_example_uses_valid_regional_extent_and_expected_crs(tmp_pa
         info = gdalinfo_json(output_dir / filename)
         assert info["size"][0] > 0 and info["size"][1] > 0
         wkt = info.get("coordinateSystem", {}).get("wkt", "")
-        assert f'ID["EPSG",{epsg_code}]' in wkt, (
-            f"{filename} should use EPSG:{epsg_code}; CRS WKT was: {wkt}"
-        )
+        assert f'ID["EPSG",{epsg_code}]' in wkt, f"{filename} should use EPSG:{epsg_code}; CRS WKT was: {wkt}"
 
 
 def test_ogr_conversion_preserves_three_features(tmp_path: Path) -> None:
