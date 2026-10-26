@@ -12,7 +12,7 @@
 ![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg) ![GitHub](https://img.shields.io/github/stars/ZQM-Computing/gdal-cookbook?style=social)
 [![CI](https://github.com/ZQM-Computing/gdal-cookbook/actions/workflows/ci.yml/badge.svg)](https://github.com/ZQM-Computing/gdal-cookbook/actions/workflows/ci.yml)
 
-A practical **GDAL/OGR command-line cookbook** for geospatial data engineering: vector and raster conversion, reprojection, clipping, mosaicking, format inspection, and repeatable batch processing. The examples are aimed at GIS analysts and data engineers building reproducible data pipelines. Synthetic fixtures and CI help verify documented workflows; the integration suite executes the five GDAL/OGR shell examples in isolated temporary directories and checks representative raster dimensions, band counts, vector feature counts, and non-empty outputs. The Python-binding example remains a separate environment-dependent workflow; check GDAL versions, CRS assumptions, nodata handling, and input/output paths against your data before production use.
+A practical **GDAL/OGR command-line cookbook** for geospatial data engineering: vector and raster conversion, reprojection, clipping, mosaicking, format inspection, and repeatable batch processing. The examples are aimed at GIS analysts and data engineers building reproducible data pipelines. Synthetic fixtures and CI help verify documented workflows; the integration suite executes the six GDAL/OGR shell examples in isolated temporary directories and checks representative raster dimensions, band counts, vector feature counts, and non-empty outputs. The Python-binding example remains a separate environment-dependent workflow; check GDAL versions, CRS assumptions, nodata handling, and input/output paths against your data before production use.
 
 ## Repository role and status
 
@@ -67,6 +67,7 @@ package to install.
 | 04 | `04-virtual-rasters` | VRT mosaicking — treating many files as one virtual raster |
 | 05 | `05-batch-processing` | Shell-loop batch processing over a directory of rasters |
 | 06 | `06-python-integration` | `osgeo.gdal` Python API: in-memory raster, gradient fill, read/write |
+| 07 | `07-cog-creation` | Create a tiled Cloud Optimized GeoTIFF with internal overviews and DEFLATE compression |
 
 ## Repository layout
 
@@ -78,7 +79,8 @@ gdal-cookbook/
 │   ├── 03-gdalwarp-reprojection/run.sh
 │   ├── 04-virtual-rasters/run.sh
 │   ├── 05-batch-processing/run.sh
-│   └── 06-python-integration/run.py
+│   ├── 06-python-integration/run.py
+│   └── 07-cog-creation/run.sh
 ├── tests/
 │   └── test_patterns.py     # exact inventory, syntax, and runtime artifact checks
 ├── pyproject.toml
@@ -96,12 +98,12 @@ python -m ruff format --check examples tests
 python -m pytest -q
 ```
 
-The suite checks the exact example inventory, shell syntax, Python syntax, and that examples do not download unpinned external data. CI also enforces Ruff lint and formatting checks across `examples/` and `tests/`. With the required GDAL CLI tools installed, it also executes all five shell examples against synthetic data and verifies the generated raster/vector artifacts. CI installs `gdal-bin` and runs this integration path. The Python bindings example is syntax-checked only; its runtime requires a Python environment with matching GDAL bindings and NumPy.
+The suite checks the exact example inventory, shell syntax, Python syntax, and that examples do not download unpinned external data. CI also enforces Ruff lint and formatting checks across `examples/` and `tests/`. With the required GDAL CLI tools installed, it also executes all six shell examples against synthetic data and verifies the generated raster/vector artifacts. CI installs `gdal-bin` and runs this integration path. The Python bindings example is syntax-checked only; its runtime requires a Python environment with matching GDAL bindings and NumPy.
 
 ## Roadmap
 
 - `gdal_calc.py` raster algebra patterns
-- COG creation flags (`-of COG`) as a bridge to [cog-cookbook](https://github.com/ZQM-Computing/cog-cookbook)
+- Extend COG validation with independent byte-range and overview-layout checks; see [cog-cookbook](https://github.com/ZQM-Computing/cog-cookbook) for deeper COG patterns
 - ogr2ogr spatial filtering (`-spat`, `-clipsrc`) walkthrough
 
 ## Contributing

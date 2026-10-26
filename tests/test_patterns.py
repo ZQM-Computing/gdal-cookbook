@@ -16,6 +16,7 @@ EXPECTED = {
     "04-virtual-rasters/run.sh",
     "05-batch-processing/run.sh",
     "06-python-integration/run.py",
+    "07-cog-creation/run.sh",
 }
 GDAL_TOOLS = ["ogr2ogr", "ogrinfo", "gdal_create", "gdal_translate", "gdalwarp", "gdalbuildvrt", "gdalinfo"]
 
@@ -58,7 +59,7 @@ def test_no_external_data_downloads():
 
 @pytest.mark.integration
 def test_all_shell_examples_execute(tmp_path):
-    """Execute all five GDAL/OGR shell examples and verify their artifacts."""
+    """Execute all six GDAL/OGR shell examples and verify their artifacts."""
     missing = [name for name in GDAL_TOOLS if not shutil.which(name)]
     if missing:
         pytest.skip(f"GDAL CLI tools unavailable: {', '.join(missing)}")
@@ -96,6 +97,7 @@ def test_all_shell_examples_execute(tmp_path):
         ],
         "04-virtual-rasters": ["output/synthetic_mosaic.vrt", "output/synthetic_mosaic.tif"],
         "05-batch-processing": ["output/batch_stack.vrt", "output/batch_input_1.tif", "output/batch_input_5.tif"],
+        "07-cog-creation": ["output/synthetic_source.tif", "output/synthetic_cog.tif"],
     }
 
     def raster_info(path: Path) -> dict:
