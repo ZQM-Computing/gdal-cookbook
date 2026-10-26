@@ -149,7 +149,9 @@ def test_reprojection_example_uses_valid_regional_extent_and_expected_crs(tmp_pa
         info = gdalinfo_json(output_dir / filename)
         assert info["size"][0] > 0 and info["size"][1] > 0
         wkt = info.get("coordinateSystem", {}).get("wkt", "")
-        assert f'ID["EPSG",{epsg_code}]' in wkt, f"{filename} should use EPSG:{epsg_code}; CRS WKT was: {wkt}"
+        assert f'ID["EPSG",{epsg_code}]' in wkt, (
+            f"{filename} should use EPSG:{epsg_code}; CRS WKT was: {wkt}"
+        )
 
 
 def test_ogr_conversion_preserves_three_features(tmp_path: Path) -> None:
@@ -190,11 +192,11 @@ def test_vrt_examples_expose_expected_band_counts(tmp_path: Path) -> None:
         subprocess.run(
             ["bash", str(ROOT / "examples" / example / "run.sh")],
             cwd=ROOT,
-        env=env,
-        check=True,
-        capture_output=True,
-        text=True,
-        timeout=120,
+            env=env,
+            check=True,
+            capture_output=True,
+            text=True,
+            timeout=120,
         )
         info = gdalinfo_json(output_dir / output_name)
         assert len(info["bands"]) == expected_bands
