@@ -315,7 +315,10 @@ def test_all_shell_examples_execute(tmp_path):
 
     wgs84 = assert_readable_raster(reprojection_dir / "synthetic_wgs84.tif")
     assert wgs84["size"] == [512, 256]
-    assert wgs84["geoTransform"] == pytest.approx([-180, 360 / 512, 0, 90, 0, -180 / 256])
+    assert wgs84["geoTransform"] == pytest.approx([10, 10 / 512, 0, 60, 0, -20 / 256])
+    wgs84_corners = wgs84.get("cornerCoordinates", {})
+    assert wgs84_corners.get("upperLeft") == pytest.approx([10, 60])
+    assert wgs84_corners.get("lowerRight") == pytest.approx([20, 40])
 
     webmercator = assert_readable_raster(reprojection_dir / "synthetic_webmercator.tif")
     webmercator_corners = webmercator.get("cornerCoordinates", {})
