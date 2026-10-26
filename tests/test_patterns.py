@@ -325,9 +325,9 @@ def test_all_shell_examples_execute(tmp_path):
     upper_left = webmercator_corners.get("upperLeft")
     lower_right = webmercator_corners.get("lowerRight")
     assert upper_left and lower_right, "Web Mercator output is missing corner coordinates"
-    assert upper_left[0] < -20_000_000 and lower_right[0] > 20_000_000, (
-        f"Web Mercator output does not span the expected projected world extent: {webmercator_corners}"
+    assert 1_000_000 < upper_left[0] < 1_200_000 and 2_100_000 < lower_right[0] < 2_300_000, (
+        f"Web Mercator output does not match the regional source longitude extent: {webmercator_corners}"
     )
-    assert upper_left[1] > 20_000_000 and lower_right[1] < -20_000_000, (
-        f"Web Mercator output does not span the expected projected latitude extent: {webmercator_corners}"
+    assert 8_000_000 < upper_left[1] < 8_500_000 and 4_500_000 < lower_right[1] < 5_000_000, (
+        f"Web Mercator output does not match the regional source latitude extent: {webmercator_corners}"
     )
