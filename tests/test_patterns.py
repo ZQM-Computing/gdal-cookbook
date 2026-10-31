@@ -19,7 +19,16 @@ EXPECTED = {
     "07-cog-creation/run.sh",
     "08-gdal-calc/run.sh",
 }
-GDAL_TOOLS = ["ogr2ogr", "ogrinfo", "gdal_create", "gdal_translate", "gdalwarp", "gdalbuildvrt", "gdalinfo", "gdal_calc.py"]
+GDAL_TOOLS = [
+    "ogr2ogr",
+    "ogrinfo",
+    "gdal_create",
+    "gdal_translate",
+    "gdalwarp",
+    "gdalbuildvrt",
+    "gdalinfo",
+    "gdal_calc.py",
+]
 
 
 def test_exact_example_inventory():
