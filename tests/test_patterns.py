@@ -17,8 +17,18 @@ EXPECTED = {
     "05-batch-processing/run.sh",
     "06-python-integration/run.py",
     "07-cog-creation/run.sh",
+    "08-gdal-calc/run.sh",
 }
-GDAL_TOOLS = ["ogr2ogr", "ogrinfo", "gdal_create", "gdal_translate", "gdalwarp", "gdalbuildvrt", "gdalinfo"]
+GDAL_TOOLS = [
+    "ogr2ogr",
+    "ogrinfo",
+    "gdal_create",
+    "gdal_translate",
+    "gdalwarp",
+    "gdalbuildvrt",
+    "gdalinfo",
+    "gdal_calc.py",
+]
 
 
 def test_exact_example_inventory():
@@ -98,6 +108,7 @@ def test_all_shell_examples_execute(tmp_path):
         "04-virtual-rasters": ["output/synthetic_mosaic.vrt", "output/synthetic_mosaic.tif"],
         "05-batch-processing": ["output/batch_stack.vrt", "output/batch_input_1.tif", "output/batch_input_5.tif"],
         "07-cog-creation": ["output/synthetic_source.tif", "output/synthetic_cog.tif"],
+        "08-gdal-calc": ["output/input_a.tif", "output/input_b.tif", "output/algebra_result.tif"],
     }
 
     def raster_info(path: Path) -> dict:
@@ -333,3 +344,14 @@ def test_all_shell_examples_execute(tmp_path):
     assert 8_000_000 < upper_left[1] < 8_500_000 and 4_500_000 < lower_right[1] < 5_000_000, (
         f"Web Mercator output does not match the regional source latitude extent: {webmercator_corners}"
     )
+
+    # Raster algebra must preserve the grid and evaluate the documented expression.
+    algebra_dir = copied_examples / "08-gdal-calc" / "output"
+    algebra = assert_readable_raster(algebra_dir / "algebra_result.tif")
+    assert algebra["size"] == [128, 128]
+    assert len(algebra["bands"]) == 1
+    assert algebra["bands"][0].get("noDataValue") == -9999
+    assert algebra["bands"][0].get("minimum") == 23
+    assert algebra["bands"][0].get("maximum") == 23
+    assert algebra["geoTransform"] == pytest.approx([-10, 20 / 128, 0, 10, 0, -20 / 128])
+    assert sample_pixel(algebra_dir / "algebra_result.tif", 64, 64) == 23
