@@ -61,8 +61,10 @@ EXAMPLES = {
     ),
     "07-cog-creation": ("synthetic_source.tif", "synthetic_cog.tif"),
     "09-exhibit-layer-prep": (
-        "source_constraints.geojson", "exhibit_constraints.gpkg",
-        "source_register.json", "LIMITATIONS.txt",
+        "source_constraints.geojson",
+        "exhibit_constraints.gpkg",
+        "source_register.json",
+        "LIMITATIONS.txt",
     ),
 }
 
@@ -240,12 +242,14 @@ def test_rank1_exhibit_layer_clip_crs_source_and_no_overwrite(tmp_path: Path) ->
     env["OUTPUT_DIR"] = str(output_dir)
     script = ROOT / "examples/09-exhibit-layer-prep/run.sh"
     command = ["bash", str(script)]
-    first = subprocess.run(command, env=env, cwd=ROOT, text=True,
-                           capture_output=True, check=False, timeout=60)
+    first = subprocess.run(command, env=env, cwd=ROOT, text=True, capture_output=True, check=False, timeout=60)
     assert first.returncode == 0, first.stderr
     info = subprocess.run(
         ["ogrinfo", "-ro", "-so", "-al", str(output_dir / "exhibit_constraints.gpkg")],
-        text=True, capture_output=True, check=True, timeout=30,
+        text=True,
+        capture_output=True,
+        check=True,
+        timeout=30,
     ).stdout
     assert "Feature Count: 1" in info
     assert 'ID["EPSG",2236]' in info or 'AUTHORITY["EPSG","2236"]' in info
@@ -265,8 +269,7 @@ def test_rank1_exhibit_layer_clip_crs_source_and_no_overwrite(tmp_path: Path) ->
     for label in ("SYNTHETIC", "delineation", "jurisdictional", "Phase I", "survey"):
         assert label in limitations
     before = {x.name: x.read_bytes() for x in output_dir.iterdir()}
-    repeated = subprocess.run(command, env=env, cwd=ROOT, text=True,
-                              capture_output=True, check=False, timeout=30)
+    repeated = subprocess.run(command, env=env, cwd=ROOT, text=True, capture_output=True, check=False, timeout=30)
     assert repeated.returncode == 2
     assert "Refusing to overwrite" in repeated.stderr
     assert {x.name: x.read_bytes() for x in output_dir.iterdir()} == before
