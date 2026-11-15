@@ -1,5 +1,8 @@
 """Integration tests for the runnable GDAL/OGR cookbook examples.
 
+All inputs are synthetic. Desktop examples are not professional environmental
+field delineations, jurisdictional determinations, Phase I ESAs or surveys.
+
 These tests execute each shell example against isolated temporary output paths,
 then assert useful output properties instead of treating a zero exit code as
 proof that the spatial operation produced the intended artifact.
@@ -57,6 +60,12 @@ EXAMPLES = {
         "batch_stack.vrt",
     ),
     "07-cog-creation": ("synthetic_source.tif", "synthetic_cog.tif"),
+    "09-exhibit-layer-prep": (
+        "source_constraints.geojson",
+        "exhibit_constraints.gpkg",
+        "source_register.json",
+        "LIMITATIONS.txt",
+    ),
 }
 
 
@@ -224,3 +233,46 @@ def test_vrt_examples_expose_expected_band_counts(tmp_path: Path) -> None:
         )
         info = gdalinfo_json(output_dir / output_name)
         assert len(info["bands"]) == expected_bands
+
+
+def test_rank1_exhibit_layer_clip_crs_source_and_no_overwrite(tmp_path: Path) -> None:
+    """Synthetic desktop-only exhibit prep; no regulatory or client result."""
+    output_dir = tmp_path / "rank1"
+    env = os.environ.copy()
+    env["OUTPUT_DIR"] = str(output_dir)
+    script = ROOT / "examples/09-exhibit-layer-prep/run.sh"
+    command = ["bash", str(script)]
+    first = subprocess.run(command, env=env, cwd=ROOT, text=True, capture_output=True, check=False, timeout=60)
+    assert first.returncode == 0, first.stderr
+    info = subprocess.run(
+        ["ogrinfo", "-ro", "-so", "-al", str(output_dir / "exhibit_constraints.gpkg")],
+        text=True,
+        capture_output=True,
+        check=True,
+        timeout=30,
+    ).stdout
+    assert "Feature Count: 1" in info
+    assert 'ID["EPSG",2236]' in info or 'AUTHORITY["EPSG","2236"]' in info
+    features = subprocess.run(
+        ["ogrinfo", "-ro", "-al", str(output_dir / "exhibit_constraints.gpkg")],
+        text=True,
+        capture_output=True,
+        check=True,
+        timeout=30,
+    ).stdout
+    assert "SYN-IND-1" in features
+    assert "SYN-IND-2" not in features
+    metadata = json.loads((output_dir / "source_register.json").read_text(encoding="utf-8"))
+    assert metadata["data"] == "synthetic"
+    assert metadata["retrieved_on"] == "2026-11-14"
+    assert metadata["source_crs"] == "EPSG:4326"
+    assert metadata["output_crs"] == "EPSG:2236"
+    assert metadata["uncertainty_flag"] == "synthetic-unverified"
+    limitations = (output_dir / "LIMITATIONS.txt").read_text(encoding="utf-8")
+    for label in ("SYNTHETIC", "delineation", "jurisdictional", "Phase I", "survey"):
+        assert label in limitations
+    before = {x.name: x.read_bytes() for x in output_dir.iterdir()}
+    repeated = subprocess.run(command, env=env, cwd=ROOT, text=True, capture_output=True, check=False, timeout=30)
+    assert repeated.returncode == 2
+    assert "Refusing to overwrite" in repeated.stderr
+    assert {x.name: x.read_bytes() for x in output_dir.iterdir()} == before

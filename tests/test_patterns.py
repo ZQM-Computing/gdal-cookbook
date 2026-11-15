@@ -1,4 +1,4 @@
-"""Structural and runtime tests for the GDAL/OGR cookbook examples."""
+"""Structural/runtime tests for synthetic GDAL patterns; not regulatory determinations."""
 
 import re
 import shutil
@@ -18,6 +18,7 @@ EXPECTED = {
     "06-python-integration/run.py",
     "07-cog-creation/run.sh",
     "08-gdal-calc/run.sh",
+    "09-exhibit-layer-prep/run.sh",
 }
 GDAL_TOOLS = [
     "ogr2ogr",
