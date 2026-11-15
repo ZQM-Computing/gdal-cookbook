@@ -69,6 +69,7 @@ package to install.
 | 06 | `06-python-integration` | `osgeo.gdal` Python API: in-memory raster, gradient fill, read/write |
 | 07 | `07-cog-creation` | Create a tiled Cloud Optimized GeoTIFF with internal overviews and DEFLATE compression |
 | 08 | `08-gdal-calc` | Raster algebra with multiple aligned inputs, explicit output type, and nodata metadata |
+| 09 | [`09-exhibit-layer-prep`](examples/09-exhibit-layer-prep/README.md) | Rank 1 synthetic vector clip/reprojection to EPSG:2236, with source/date register and limitations |
 
 ## Repository layout
 
@@ -101,6 +102,21 @@ python -m pytest -q
 ```
 
 The suite checks the exact example inventory, shell syntax, Python syntax, and that examples do not download unpinned external data. CI also enforces Ruff lint and formatting checks across `examples/` and `tests/`. With the required GDAL CLI tools installed, it also executes all seven shell examples against synthetic data and verifies the generated raster/vector artifacts. CI installs `gdal-bin` and runs this integration path. The Python bindings example is syntax-checked only; its runtime requires a Python environment with matching GDAL bindings and NumPy.
+
+## Rank 1 environmental GIS exhibit preparation
+
+[Example 09](examples/09-exhibit-layer-prep/README.md) demonstrates
+repeatable GDAL/OGR clip and CRS transformation for the type of
+environmental figure-series data preparation consulting teams may
+subcontract. The example uses **synthetic** polygons only and accompanies
+the GeoPackage with source/retrieval date, version, limitations and unknown
+coverage flags. EPSG:2236 uses **US survey feet**; this is an intermediate
+map-data step, not a complete screening or final map.
+
+**Desktop-only demonstration.** Not a field wetland delineation,
+jurisdictional determination, Phase I ESA, survey, professional certification
+or permit approval. No client work, real-world NWI/FEMA data or professional
+review is represented.
 
 ## Roadmap
 
