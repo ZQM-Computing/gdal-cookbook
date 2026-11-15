@@ -255,7 +255,10 @@ def test_rank1_exhibit_layer_clip_crs_source_and_no_overwrite(tmp_path: Path) ->
     assert 'ID["EPSG",2236]' in info or 'AUTHORITY["EPSG","2236"]' in info
     features = subprocess.run(
         ["ogrinfo", "-ro", "-al", str(output_dir / "exhibit_constraints.gpkg")],
-        text=True, capture_output=True, check=True, timeout=30,
+        text=True,
+        capture_output=True,
+        check=True,
+        timeout=30,
     ).stdout
     assert "SYN-IND-1" in features
     assert "SYN-IND-2" not in features
