@@ -1,5 +1,5 @@
 site_name: gdal-patterns
-site_description: GDAL/OGR command-line patterns ΓÇö conversion, reprojection, clipping, mosaicking. Production-tested with runnable examples
+site_description: GDAL/OGR command-line patterns — conversion, reprojection, clipping, mosaicking. Production-tested with runnable examples
 site_author: ZQM Computing
 repo_url: https://github.com/ZQM-Computing/gdal-patterns
 

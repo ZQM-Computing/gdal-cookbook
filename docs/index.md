@@ -84,7 +84,7 @@ CI runs `ruff check` / `ruff format --check` and the pytest suite on every push 
 
 ## Contributing
 
-See [CONTRIBUTING.md](CONTRIBUTING.md). Report security issues to zqmcomputing@gmail.com — please do not open a public issue for those.
+See [CONTRIBUTING.md](https://github.com/ZQM-Computing/gdal-cookbook/blob/main/CONTRIBUTING.md). Report security issues to security@zqm-computing.io or via [GitHub Security Advisory](https://github.com/ZQM-Computing/gdal-cookbook/security/advisories/new) — please do not open a public issue for those.
 
 ## More from this series
 
@@ -127,7 +127,7 @@ MIT — see LICENSE file.
 
 ## License
 
-MIT — see [LICENSE](LICENSE).
+MIT — see [LICENSE](https://github.com/ZQM-Computing/gdal-cookbook/blob/main/LICENSE).
 
 <!-- ZQM-FOOTER-START -->
 ---
